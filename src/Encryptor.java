@@ -69,16 +69,24 @@ return temp;    }
      */
     public String encryptMessage(String message)
     {
-        String temp="";
-        String sore="";
-        fillBlock(message);
-        for(int i=0;i<letterBlock[0].length;i++){
-            for(int s=0;s<letterBlock.length;s++){
-                sore+=letterBlock[s][i];
+        String temp=message;
+        String together="";
+        int size=numRows*numCols;
+        while (temp.length()>0) {
+            String each = "";
+            if (temp.length() < size) {
+                fillBlock(temp);
+                together += encryptBlock();
+                temp="";
+            } else {
+                each = temp.substring(0, size);
+                fillBlock(each);
+                together += encryptBlock();
+                temp = temp.substring(size);
+
             }
         }
-
-        return sore;
+        return together;
     }
 
     /**  Decrypts an encrypted message. All filler 'A's that may have been
@@ -105,7 +113,36 @@ return temp;    }
      */
     public String decryptMessage(String encryptedMessage)
     {
-        return "m";
+        int times=encryptedMessage.length()/(numCols*numRows);
+        String temp=encryptedMessage;
+        String together = "";
+        while (times>0) {
+            decryptBlock(temp);
+            encryptBlock();
+            for (String[] strings : letterBlock) {
+                for (int s = 0; s < letterBlock[0].length; s++) {
+                    if(strings[s].equals("A")&&(times-1==0)){
+                        together=together;
+                    }else{
+                    together += strings[s];
+                }}
+            }
+            temp=temp.substring(numCols*numRows);
+            times--;
+        }
+        return together;
         /* to be implemented in part (d) */
     }
-}
+    public void decryptBlock(String encryptor){
+        int count=0;
+        for (int i = 0; i < letterBlock[0].length; i++) {
+            for (int s = 0; s < letterBlock.length; s++) {
+                if(count<encryptor.length()) {
+                    letterBlock[s][i] = encryptor.substring(count, count+1);
+                    count++;
+                }else{
+                    letterBlock[s][i]="A";
+                }
+            }
+        }
+}}
